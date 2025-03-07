@@ -38,6 +38,18 @@ public class AccountService {
         // Save the account
         return accountRepository.save(account);
     }
+
+
+    @Transactional(readOnly = true)
+    public Account authenticate(String username, String password) {
+        Optional<Account> optionalAccount = accountRepository.findByUsername(username);
+
+        // Verify user exists and password matches
+        if (optionalAccount.isPresent() && optionalAccount.get().getPassword().equals(password)) {
+            return optionalAccount.get();
+        }
+        return null;
+    }
 }
 
 

@@ -5,6 +5,10 @@ import java.util.Optional;
 import com.example.entity.Account;
 
 @Repository
-public interface AccountRepository extends JpaRepository<Account, Long> {
+public interface AccountRepository extends JpaRepository<Account,Integer> {
     Optional<Account> findByUsername(String username);
+    
+
 }
+
+

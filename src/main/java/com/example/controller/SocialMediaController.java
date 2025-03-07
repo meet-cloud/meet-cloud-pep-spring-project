@@ -3,9 +3,13 @@ package com.example.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import java.util.Optional;
 
 import com.example.entity.Account;
+import com.example.entity.Message;
 import com.example.service.AccountService;
+import com.example.service.MessageService;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
@@ -18,13 +22,16 @@ import com.example.service.AccountService;
 @RequestMapping
 public class SocialMediaController {
 
-   
+    private final MessageService messageService;
     private final AccountService accountService;
  
     @Autowired
-    public SocialMediaController(AccountService accountService) {
+    public SocialMediaController(AccountService accountService, MessageService messageService) {
         this.accountService = accountService;
+        this.messageService = messageService;
     }
+
+  
     
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody Account account) {
@@ -42,7 +49,47 @@ public class SocialMediaController {
         // Handle unexpected errors
         return ResponseEntity.status(500).body("An unexpected error occurred.");
     }
-}
+    } 
+    
+    
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody Account account) {
+        Account authenticatedAccount = accountService.authenticate(account.getUsername(), account.getPassword());
+
+        if (authenticatedAccount != null) {
+            return ResponseEntity.ok(authenticatedAccount);
+        } else {
+            return ResponseEntity.status(401).body("Invalid username or password.");
+        }
+    }
+
+
+    @PostMapping("/messages")
+    public ResponseEntity<?> createMessage(@RequestBody Message message) {
+        try {
+            Message createdMessage = messageService.createMessage(message);
+            return ResponseEntity.ok(createdMessage);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }catch (Exception e) {
+            return ResponseEntity.status(500).body("An unexpected error occurred.");
+        }
+    }
+
+
+    @GetMapping("/messages")
+    public ResponseEntity<List<Message>> getAllMessages() {
+        List<Message> messages = messageService.getAllMessages();
+        return ResponseEntity.ok(messages); // ✅ Always returns 200 OK
+    }
+
+   
+
+
+    
+    
+        
    
 
 }
+
