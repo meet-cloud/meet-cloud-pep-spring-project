@@ -83,6 +83,18 @@ public class SocialMediaController {
         return ResponseEntity.ok(messages); // ✅ Always returns 200 OK
     }
 
+
+    @DeleteMapping("/messages/{messageId}")
+    public ResponseEntity<Integer> deleteMessage(@PathVariable Integer messageId) {
+        int rowsDeleted = messageService.deleteMessageById(messageId);
+        
+        // If rowsDeleted > 0, message was deleted, otherwise it did not exist
+        return rowsDeleted > 0 
+            ? ResponseEntity.ok(rowsDeleted) 
+            : ResponseEntity.ok().build();  // Return 200 OK with empty body if message did not exist
+    }
+
+    
    
 
 

@@ -52,7 +52,16 @@ public class MessageService {
     public List<Message> getAllMessages() {
         return messageRepository.findAll(); // ✅ Fetch all messages from DB
     }
+     
 
+    public int deleteMessageById(Integer messageId) {
+        // Check if message exists
+        if (messageRepository.existsById(messageId)) {
+            messageRepository.deleteById(messageId);  // Delete the message
+            return 1;  // Return 1 if deleted
+        }
+        return 0;  // Return 0 if the message did not exist
+    }
 
     
 
