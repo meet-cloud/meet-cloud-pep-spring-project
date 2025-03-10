@@ -19,23 +19,15 @@ public class AccountService {
 
     @Transactional
     public Account registerAccount(Account account) {
-        // Validate username is not blank
         if (account.getUsername() == null || account.getUsername().trim().isEmpty()) {
             throw new IllegalArgumentException("Username cannot be blank.");
         }
-
-        // Validate password length
         if (account.getPassword() == null || account.getPassword().length() < 4) {
             throw new IllegalArgumentException("Password must be at least 4 characters long.");
         }
-
-        // Check for duplicate username
         if (accountRepository.findByUsername(account.getUsername()).isPresent()) {
             throw new IllegalStateException("Username already exists");
         }
-
-
-        // Save the account
         return accountRepository.save(account);
     }
 
@@ -43,8 +35,6 @@ public class AccountService {
     @Transactional(readOnly = true)
     public Account authenticate(String username, String password) {
         Optional<Account> optionalAccount = accountRepository.findByUsername(username);
-
-        // Verify user exists and password matches
         if (optionalAccount.isPresent() && optionalAccount.get().getPassword().equals(password)) {
             return optionalAccount.get();
         }

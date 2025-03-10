@@ -25,57 +25,47 @@ public class MessageService {
 
     @Transactional
     public Message createMessage(Message message) {
-        // Validate message text
         if (message.getMessageText() == null || message.getMessageText().trim().isEmpty()) {
             throw new IllegalArgumentException("Message text cannot be blank.");
         }
         if (message.getMessageText().length() > 255) {
             throw new IllegalArgumentException("Message text cannot exceed 255 characters.");
         }
-
-       
-        // Validate postedBy (user must exist)
         if (message.getPostedBy() == null) {
             throw new IllegalArgumentException("postedBy cannot be null.");
         }
-
         Optional<Account> user = accountRepository.findById(message.getPostedBy());
         if (user.isEmpty()) {
             throw new IllegalArgumentException("User does not exist.");
         }
-
-        // Save message
         return messageRepository.save(message);
     }
 
 
     public List<Message> getAllMessages() {
-        return messageRepository.findAll(); // ✅ Fetch all messages from DB
+        return messageRepository.findAll();    
     }
      
 
     public int deleteMessageById(Integer messageId) {
-        // Check if message exists
         if (messageRepository.existsById(messageId)) {
-            messageRepository.deleteById(messageId);  // Delete the message
-            return 1;  // Return 1 if deleted
+            messageRepository.deleteById(messageId);  
+         return 1;  
         }
-        return 0;  // Return 0 if the message did not exist
+        return 0; 
     }
 
 
     public int updateMessageText(Integer messageId, String newMessageText) {
         Optional<Message> optionalMessage = messageRepository.findById(messageId);
-        
-        if (optionalMessage.isPresent()) {
+         if (optionalMessage.isPresent()) {
             Message message = optionalMessage.get();
-            message.setMessageText(newMessageText);  // Update text
-            messageRepository.save(message);  // Save updated message
-            return 1;  // 1 row updated
+            message.setMessageText(newMessageText);  
+            messageRepository.save(message);  
+                return 1;  
         }
-        
-        return 0;  // Message does not exist, return 0
-    }
+         return 0;  
+   }
 
 
     public Optional<Message> getMessageById(Integer messageId) {
