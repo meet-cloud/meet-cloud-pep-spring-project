@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 import com.example.entity.Account;
 import com.example.entity.Message;
@@ -92,6 +93,39 @@ public class SocialMediaController {
         return rowsDeleted > 0 
             ? ResponseEntity.ok(rowsDeleted) 
             : ResponseEntity.ok().build();  // Return 200 OK with empty body if message did not exist
+    }
+
+
+    @PatchMapping("/messages/{messageId}")
+    public ResponseEntity<Integer> updateMessageText(@PathVariable Integer messageId, @RequestBody Map<String, String> updateData) {
+    String newMessageText = updateData.get("messageText");
+
+    // Validate new message text
+    if (newMessageText == null || newMessageText.trim().isEmpty() || newMessageText.length() > 255) {
+        return ResponseEntity.badRequest().build(); // 400 Bad Request if invalid input
+    }
+
+    int rowsUpdated = messageService.updateMessageText(messageId, newMessageText);
+    
+    return rowsUpdated > 0 
+        ? ResponseEntity.ok(rowsUpdated) // 200 OK with 1 if update successful
+        : ResponseEntity.badRequest().build(); // 400 Bad Request if message does not exist
+    }
+
+
+
+    @GetMapping("/messages/{messageId}")
+    public ResponseEntity<Message> getMessageById(@PathVariable Integer messageId) {
+        return messageService.getMessageById(messageId)
+                .map(ResponseEntity::ok)  // Return 200 OK with the message if found
+                .orElse(ResponseEntity.ok().build());  // Return 200 OK with an empty body if not found
+    }
+
+
+    @GetMapping("{accountId}/messages")
+    public ResponseEntity<List<Message>> getMessagesByAccountId(@PathVariable Integer accountId) {
+        List<Message> messages = messageService.getMessagesByAccountId(accountId);
+        return ResponseEntity.ok(messages);  // Always returns 200 OK with an empty list if no messages
     }
 
     

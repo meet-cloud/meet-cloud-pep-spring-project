@@ -63,6 +63,30 @@ public class MessageService {
         return 0;  // Return 0 if the message did not exist
     }
 
+
+    public int updateMessageText(Integer messageId, String newMessageText) {
+        Optional<Message> optionalMessage = messageRepository.findById(messageId);
+        
+        if (optionalMessage.isPresent()) {
+            Message message = optionalMessage.get();
+            message.setMessageText(newMessageText);  // Update text
+            messageRepository.save(message);  // Save updated message
+            return 1;  // 1 row updated
+        }
+        
+        return 0;  // Message does not exist, return 0
+    }
+
+
+    public Optional<Message> getMessageById(Integer messageId) {
+        return messageRepository.findById(messageId);
+    }
+
+
+    public List<Message> getMessagesByAccountId(Integer accountId) {
+        return messageRepository.findByPostedBy(accountId);
+    }
+
     
 
 }
